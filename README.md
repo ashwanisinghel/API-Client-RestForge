@@ -217,4 +217,4 @@ For issues or questions, please refer to the documentation or create an issue in
 
 ---
 
-Built with ❤️ using Tauri + React
+Built with ❤️ by Ashwani Singh
