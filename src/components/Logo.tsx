@@ -23,24 +23,47 @@ export default function Logo({ size = 'md', showText = true, className = '' }: L
 
   return (
     <div className={`flex items-center gap-3 ${className}`}>
-      {/* Logo Icon */}
-      <div className={`${sizeClasses[size]} rounded-2xl bg-gradient-to-br from-purple-600 via-pink-500 to-orange-500 flex items-center justify-center shadow-lg`}>
+      {/* Modern Elegant Logo Icon - Geometric Design */}
+      <div className={`${sizeClasses[size]} rounded-xl bg-gradient-to-br from-indigo-600 via-purple-600 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-500/30`}>
         <svg
-          viewBox="0 0 40 20"
-          className="w-3/4 h-3/4 text-white"
-          fill="currentColor"
+          viewBox="0 0 32 32"
+          className="w-4/5 h-4/5"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          {/* R */}
-          <path d="M4 2 L4 18 L6 18 L6 11 L11 11 C13.5 11 15 9.5 15 7 C15 4.5 13.5 3 11 3 L4 3 Z M6 5 L11 5 C12 5 13 6 13 7 C13 8 12 9 11 9 L6 9 Z M11 9 L14 18 L16 18 L13 9" />
+          <defs>
+            <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="1" />
+              <stop offset="100%" stopColor="#F3F4F6" stopOpacity="0.9" />
+            </linearGradient>
+          </defs>
           
-          {/* F */}
-          <path d="M20 2 L20 18 L22 18 L22 11 L30 11 L30 9 L22 9 L22 4 L32 4 L32 2 Z" />
+          {/* Central node */}
+          <circle cx="16" cy="16" r="4" fill="url(#logo-gradient)" />
+          
+          {/* Connecting lines to nodes */}
+          <line x1="16" y1="12" x2="16" y2="8" stroke="url(#logo-gradient)" strokeWidth="1.5" strokeLinecap="round" />
+          <line x1="20" y1="16" x2="24" y2="16" stroke="url(#logo-gradient)" strokeWidth="1.5" strokeLinecap="round" />
+          <line x1="16" y1="20" x2="16" y2="24" stroke="url(#logo-gradient)" strokeWidth="1.5" strokeLinecap="round" />
+          <line x1="12" y1="16" x2="8" y2="16" stroke="url(#logo-gradient)" strokeWidth="1.5" strokeLinecap="round" />
+          
+          {/* Corner nodes */}
+          <circle cx="16" cy="8" r="2" fill="url(#logo-gradient)" />
+          <circle cx="24" cy="16" r="2" fill="url(#logo-gradient)" />
+          <circle cx="16" cy="24" r="2" fill="url(#logo-gradient)" />
+          <circle cx="8" cy="16" r="2" fill="url(#logo-gradient)" />
+          
+          {/* Diagonal connections for modern look */}
+          <line x1="18" y1="14" x2="22" y2="10" stroke="url(#logo-gradient)" strokeWidth="1" strokeLinecap="round" strokeOpacity="0.6" />
+          <line x1="18" y1="18" x2="22" y2="22" stroke="url(#logo-gradient)" strokeWidth="1" strokeLinecap="round" strokeOpacity="0.6" />
+          <line x1="14" y1="18" x2="10" y2="22" stroke="url(#logo-gradient)" strokeWidth="1" strokeLinecap="round" strokeOpacity="0.6" />
+          <line x1="14" y1="14" x2="10" y2="10" stroke="url(#logo-gradient)" strokeWidth="1" strokeLinecap="round" strokeOpacity="0.6" />
         </svg>
       </div>
       
-      {/* App Name */}
+      {/* App Name with elegant typography */}
       {showText && (
-        <span className={`font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 bg-clip-text text-transparent ${textSizeClasses[size]}`}>
+        <span className={`font-semibold tracking-tight bg-gradient-to-r from-indigo-600 via-purple-600 to-purple-500 bg-clip-text text-transparent ${textSizeClasses[size]}`}>
           RestForge
         </span>
       )}

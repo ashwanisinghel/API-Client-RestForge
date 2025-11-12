@@ -44,7 +44,7 @@ export default function Layout() {
 
   return (
     <ToastProvider>
-      <div className="h-screen bg-gradient-to-br from-background via-background to-purple-50/20 dark:to-purple-950/20 text-foreground">
+      <div className="h-screen bg-gradient-to-br from-background via-background to-indigo-50/20 dark:to-indigo-950/20 text-foreground">
         <ResizablePanels
           showRightPanel={true}
           defaultLeftWidth={20}
