@@ -44,34 +44,54 @@ export default function Layout() {
 
   return (
     <ToastProvider>
-      <div className="h-screen bg-gradient-to-br from-background via-background to-indigo-50/20 dark:to-indigo-950/20 text-foreground">
-        <ResizablePanels
-          showRightPanel={true}
-          defaultLeftWidth={20}
-          minLeftWidth={15}
-          maxLeftWidth={40}
-          leftPanel={
-            <div className="flex flex-col h-full glass-effect">
-              <div className="flex items-center justify-between px-6 py-4 border-b border-border/50 bg-gradient-to-r from-background/80 to-muted/20">
-                <Logo size="md" showText={true} />
-                <button
-                  onClick={cycleTheme}
-                  className="p-2.5 hover:bg-muted/50 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95"
-                  title="Toggle theme"
-                >
-                  {getThemeIcon()}
-                </button>
+      <div className="h-screen flex flex-col bg-background text-foreground">
+        {/* Header */}
+        <header className="flex items-center justify-between px-6 py-3 border-b border-border bg-background">
+          <Logo size="md" showText={true} />
+          <div className="flex items-center gap-4">
+            <span className="text-xs text-muted-foreground">API Platform Tool</span>
+            <button
+              onClick={cycleTheme}
+              className="p-2 hover:bg-muted rounded-md transition-colors"
+              title="Toggle theme"
+            >
+              {getThemeIcon()}
+            </button>
+          </div>
+        </header>
+
+        {/* Main Content */}
+        <div className="flex-1 overflow-hidden">
+          <ResizablePanels
+            showRightPanel={true}
+            defaultLeftWidth={20}
+            minLeftWidth={15}
+            maxLeftWidth={40}
+            leftPanel={
+              <div className="flex flex-col h-full">
+                <Sidebar />
               </div>
-              <Sidebar />
-            </div>
-          }
-          rightPanel={
-            <div className="flex flex-col h-full">
-              <TabBar />
-              <RequestPanel />
-            </div>
-          }
-        />
+            }
+            rightPanel={
+              <div className="flex flex-col h-full">
+                <TabBar />
+                <RequestPanel />
+              </div>
+            }
+          />
+        </div>
+
+        {/* Footer */}
+        <footer className="flex items-center justify-between px-6 py-2 border-t border-border bg-muted/30 text-xs text-muted-foreground">
+          <div className="flex items-center gap-4">
+            <span>RestForge</span>
+            <span>•</span>
+            <span>v1.0.0</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <span>Made with ❤️ for developers</span>
+          </div>
+        </footer>
       </div>
     </ToastProvider>
   );

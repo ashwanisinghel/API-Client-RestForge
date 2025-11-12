@@ -10,34 +10,28 @@ export default function JsonViewer({ json, className = '' }: JsonViewerProps) {
     const tokens: JSX.Element[] = [];
     let index = 0;
 
-    // Simple JSON tokenizer and highlighter with theme-matched colors
+    // Simple JSON tokenizer and highlighter
     const addToken = (text: string, type: 'key' | 'string' | 'number' | 'boolean' | 'null' | 'punctuation' | 'whitespace') => {
       const key = `${type}-${index++}`;
       
       switch (type) {
         case 'key':
-          // Use elegant indigo color from app theme
-          tokens.push(<span key={key} className="text-indigo-600 dark:text-indigo-400 font-semibold">{text}</span>);
+          tokens.push(<span key={key} className="text-blue-600 dark:text-blue-400">{text}</span>);
           break;
         case 'string':
-          // Use elegant teal that complements indigo
-          tokens.push(<span key={key} className="text-teal-600 dark:text-teal-400">{text}</span>);
+          tokens.push(<span key={key} className="text-green-600 dark:text-green-400">{text}</span>);
           break;
         case 'number':
-          // Use purple from the elegant gradient theme
-          tokens.push(<span key={key} className="text-purple-600 dark:text-purple-400 font-medium">{text}</span>);
+          tokens.push(<span key={key} className="text-orange-600 dark:text-orange-400">{text}</span>);
           break;
         case 'boolean':
-          // Use elegant indigo-purple blend
-          tokens.push(<span key={key} className="text-indigo-700 dark:text-indigo-500 font-semibold">{text}</span>);
+          tokens.push(<span key={key} className="text-purple-600 dark:text-purple-400">{text}</span>);
           break;
         case 'null':
-          // Use muted red that fits elegant theme
-          tokens.push(<span key={key} className="text-red-500 dark:text-red-400 font-semibold opacity-75">{text}</span>);
+          tokens.push(<span key={key} className="text-red-600 dark:text-red-400">{text}</span>);
           break;
         case 'punctuation':
-          // Use muted foreground color
-          tokens.push(<span key={key} className="text-muted-foreground/50 dark:text-muted-foreground/40">{text}</span>);
+          tokens.push(<span key={key} className="text-muted-foreground">{text}</span>);
           break;
         case 'whitespace':
           tokens.push(<span key={key}>{text}</span>);
@@ -152,8 +146,8 @@ export default function JsonViewer({ json, className = '' }: JsonViewerProps) {
     const highlighted = highlightJson(json);
     
     return (
-      <div className="rounded-lg bg-muted/30 dark:bg-muted/20 border border-border/50 p-4 overflow-x-auto">
-        <pre className={`text-sm font-mono whitespace-pre-wrap break-words code-editor ${className}`}>
+      <div className="rounded-md bg-muted/30 border border-border p-3 overflow-x-auto">
+        <pre className={`text-xs font-mono whitespace-pre-wrap break-words leading-relaxed ${className}`}>
           {highlighted}
         </pre>
       </div>
@@ -161,8 +155,8 @@ export default function JsonViewer({ json, className = '' }: JsonViewerProps) {
   } catch (error) {
     // If not valid JSON, display as plain text
     return (
-      <div className="rounded-lg bg-muted/30 dark:bg-muted/20 border border-border/50 p-4 overflow-x-auto">
-        <pre className={`text-sm font-mono whitespace-pre-wrap break-words code-editor ${className}`}>
+      <div className="rounded-md bg-muted/30 border border-border p-3 overflow-x-auto">
+        <pre className={`text-xs font-mono whitespace-pre-wrap break-words leading-relaxed ${className}`}>
           {json}
         </pre>
       </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Copy, Check } from 'lucide-react';
 import { ResponseData } from '@/types';
 import { formatBytes, formatTime, getStatusColor, tryFormatJson } from '@/utils/requestUtils';
 import JsonViewer from './JsonViewer';
@@ -10,8 +11,19 @@ interface ResponseViewerProps {
 export default function ResponseViewer({ response }: ResponseViewerProps) {
   const [view, setView] = useState<'body' | 'headers'>('body');
   const [format, setFormat] = useState<'pretty' | 'raw'>('pretty');
+  const [copied, setCopied] = useState(false);
 
   const formattedBody = format === 'pretty' ? tryFormatJson(response.body) : response.body;
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(view === 'body' ? response.body : JSON.stringify(response.headers, null, 2));
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error('Failed to copy:', error);
+    }
+  };
 
   return (
     <div className="flex flex-col h-full">
@@ -60,30 +72,49 @@ export default function ResponseViewer({ response }: ResponseViewerProps) {
           </button>
         </div>
 
-        {view === 'body' && (
-          <div className="flex gap-2 px-4">
-            <button
-              onClick={() => setFormat('pretty')}
-              className={`px-3 py-1 text-xs rounded ${
-                format === 'pretty'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted hover:bg-muted/80'
-              }`}
-            >
-              Pretty
-            </button>
-            <button
-              onClick={() => setFormat('raw')}
-              className={`px-3 py-1 text-xs rounded ${
-                format === 'raw'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted hover:bg-muted/80'
-              }`}
-            >
-              Raw
-            </button>
-          </div>
-        )}
+        <div className="flex gap-2 px-4">
+          {view === 'body' && (
+            <>
+              <button
+                onClick={() => setFormat('pretty')}
+                className={`px-3 py-1 text-xs rounded-md transition-colors ${
+                  format === 'pretty'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted hover:bg-muted/80'
+                }`}
+              >
+                Pretty
+              </button>
+              <button
+                onClick={() => setFormat('raw')}
+                className={`px-3 py-1 text-xs rounded-md transition-colors ${
+                  format === 'raw'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted hover:bg-muted/80'
+                }`}
+              >
+                Raw
+              </button>
+            </>
+          )}
+          <button
+            onClick={handleCopy}
+            className="px-3 py-1 text-xs rounded-md bg-muted hover:bg-muted/80 transition-colors flex items-center gap-1.5"
+            title="Copy to clipboard"
+          >
+            {copied ? (
+              <>
+                <Check className="w-3 h-3" />
+                Copied
+              </>
+            ) : (
+              <>
+                <Copy className="w-3 h-3" />
+                Copy
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Content */}
@@ -92,18 +123,18 @@ export default function ResponseViewer({ response }: ResponseViewerProps) {
           format === 'pretty' && response.headers['content-type']?.includes('application/json') ? (
             <JsonViewer json={formattedBody} />
           ) : (
-            <div className="rounded-lg bg-muted/30 dark:bg-muted/20 border border-border/50 p-4 overflow-x-auto">
-              <pre className="text-sm font-mono whitespace-pre-wrap break-words code-editor text-foreground">
+            <div className="rounded-md bg-muted/30 border border-border p-3 overflow-x-auto">
+              <pre className="text-xs font-mono whitespace-pre-wrap break-words leading-relaxed text-foreground">
                 {formattedBody}
               </pre>
             </div>
           )
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-1">
             {Object.entries(response.headers).map(([key, value]) => (
-              <div key={key} className="flex gap-4 py-2 border-b border-border/50 rounded-lg px-2 hover:bg-muted/30 dark:hover:bg-muted/20 transition-colors">
-                <span className="font-medium min-w-[200px] text-indigo-600 dark:text-indigo-400">{key}</span>
-                <span className="text-foreground/80 break-all font-mono text-sm">{value}</span>
+              <div key={key} className="grid grid-cols-[minmax(150px,200px)_1fr] gap-4 py-2 px-3 border-b border-border hover:bg-muted/30 transition-colors">
+                <span className="font-medium text-sm text-primary truncate" title={key}>{key}</span>
+                <span className="text-foreground/80 break-all font-mono text-xs">{value}</span>
               </div>
             ))}
           </div>
