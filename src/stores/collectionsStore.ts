@@ -50,19 +50,38 @@ export const useCollectionsStore = create<CollectionsState>((set, get) => ({
 
   addRequestToCollection: (collectionId, request) => {
     console.log('Store: Adding request to collection', { collectionId, request });
-    const currentState = get();
-    console.log('Store: Current collections before add:', currentState.collections);
+    
+    const collection = get().collections.find(c => c.id === collectionId);
+    if (!collection) {
+      console.error('Collection not found:', collectionId);
+      return;
+    }
+    
+    // Create a new request with a unique ID
+    const newRequest = { ...request, id: crypto.randomUUID() };
+    console.log('Store: Created new request with ID:', newRequest.id);
     
     set((state) => {
       const updatedCollections = state.collections.map((c) =>
         c.id === collectionId 
-          ? { ...c, requests: [...c.requests, { ...request, id: crypto.randomUUID() }] }
+          ? { ...c, requests: [...c.requests, newRequest] }
           : c
       );
+      
       console.log('Store: Updated collections after add:', updatedCollections);
+      const targetCollection = updatedCollections.find(c => c.id === collectionId);
+      console.log('Store: Target collection now has', targetCollection?.requests.length, 'requests');
+      
       return { collections: updatedCollections };
     });
+    
+    // Zustand's set is synchronous, so we can save immediately
     get().saveCollections();
+    
+    // Verify the save
+    const savedState = get();
+    const verifyCollection = savedState.collections.find(c => c.id === collectionId);
+    console.log('Store: Verification - collection has', verifyCollection?.requests.length, 'requests');
   },
 
   removeRequestFromCollection: (collectionId, requestId) => {
@@ -107,7 +126,17 @@ export const useCollectionsStore = create<CollectionsState>((set, get) => ({
   saveCollections: async () => {
     try {
       const { collections } = get();
-      localStorage.setItem(COLLECTIONS_KEY, JSON.stringify(collections));
+      console.log('Store: Saving collections to localStorage:', collections);
+      const serialized = JSON.stringify(collections);
+      localStorage.setItem(COLLECTIONS_KEY, serialized);
+      console.log('Store: Collections saved successfully');
+      
+      // Verify the save
+      const verification = localStorage.getItem(COLLECTIONS_KEY);
+      if (verification) {
+        const parsed = JSON.parse(verification);
+        console.log('Store: Verified saved collections:', parsed);
+      }
     } catch (error) {
       console.error('Failed to save collections:', error);
     }
