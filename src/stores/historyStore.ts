@@ -6,6 +6,7 @@ interface HistoryState {
   addHistoryItem: (item: RequestHistoryItem) => void;
   clearHistory: () => void;
   deleteHistoryItem: (id: string) => void;
+  updateHistoryItem: (id: string, updatedItem: RequestHistoryItem) => void;
   loadHistory: () => Promise<void>;
   saveHistory: () => Promise<void>;
 }
@@ -36,6 +37,15 @@ export const useHistoryStore = create<HistoryState>((set, get) => ({
   deleteHistoryItem: (id) => {
     set((state) => ({
       history: state.history.filter((item) => item.id !== id),
+    }));
+    get().saveHistory();
+  },
+
+  updateHistoryItem: (id, updatedItem) => {
+    set((state) => ({
+      history: state.history.map((item) => 
+        item.id === id ? updatedItem : item
+      ),
     }));
     get().saveHistory();
   },

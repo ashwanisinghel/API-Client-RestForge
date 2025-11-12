@@ -6,6 +6,7 @@ interface CollectionsState {
   addCollection: (name: string, description?: string) => void;
   deleteCollection: (id: string) => void;
   updateCollection: (id: string, updates: Partial<Collection>) => void;
+  addRequestToCollection: (collectionId: string, request: any) => void;
   loadCollections: () => Promise<void>;
   saveCollections: () => Promise<void>;
 }
@@ -40,6 +41,17 @@ export const useCollectionsStore = create<CollectionsState>((set, get) => ({
     set((state) => ({
       collections: state.collections.map((c) =>
         c.id === id ? { ...c, ...updates } : c
+      ),
+    }));
+    get().saveCollections();
+  },
+
+  addRequestToCollection: (collectionId, request) => {
+    set((state) => ({
+      collections: state.collections.map((c) =>
+        c.id === collectionId 
+          ? { ...c, requests: [...c.requests, { ...request, id: crypto.randomUUID() }] }
+          : c
       ),
     }));
     get().saveCollections();
