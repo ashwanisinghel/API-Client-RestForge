@@ -8,6 +8,7 @@ import { useEnvironmentsStore } from '@/stores/environmentsStore';
 import Sidebar from './Sidebar';
 import RequestPanel from './RequestPanel';
 import TabBar from './TabBar';
+import ResizablePanels from './ResizablePanels';
 
 export default function Layout() {
   const { theme, setTheme } = useSettingsStore();
@@ -40,27 +41,34 @@ export default function Layout() {
   };
 
   return (
-    <div className="flex h-screen bg-background text-foreground">
-      {/* Sidebar */}
-      <div className="w-64 border-r border-border flex flex-col">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-          <h1 className="text-xl font-bold">RestForge</h1>
-          <button
-            onClick={cycleTheme}
-            className="p-2 hover:bg-muted rounded-md transition-colors"
-            title="Toggle theme"
-          >
-            {getThemeIcon()}
-          </button>
-        </div>
-        <Sidebar />
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        <TabBar />
-        <RequestPanel />
-      </div>
+    <div className="h-screen bg-background text-foreground">
+      <ResizablePanels
+        showRightPanel={true}
+        defaultLeftWidth={20}
+        minLeftWidth={15}
+        maxLeftWidth={40}
+        leftPanel={
+          <div className="flex flex-col h-full">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+              <h1 className="text-xl font-bold">RestForge</h1>
+              <button
+                onClick={cycleTheme}
+                className="p-2 hover:bg-muted rounded-md transition-colors"
+                title="Toggle theme"
+              >
+                {getThemeIcon()}
+              </button>
+            </div>
+            <Sidebar />
+          </div>
+        }
+        rightPanel={
+          <div className="flex flex-col h-full">
+            <TabBar />
+            <RequestPanel />
+          </div>
+        }
+      />
     </div>
   );
 }

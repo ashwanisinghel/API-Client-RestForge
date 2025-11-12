@@ -9,6 +9,7 @@ import { HttpMethod, RequestConfig } from '@/types';
 import KeyValueEditor from './KeyValueEditor';
 import ResponseViewer from './ResponseViewer';
 import CurlDialog from './CurlDialog';
+import ResizablePanels from './ResizablePanels';
 
 const HTTP_METHODS: HttpMethod[] = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'];
 
@@ -165,140 +166,143 @@ export default function RequestPanel() {
           ))}
         </div>
 
-        <div className="flex-1 flex overflow-hidden">
-          {/* Request Section */}
-          <div className="flex-1 overflow-y-auto p-4">
-            {activeSection === 'params' && (
-              <KeyValueEditor
-                items={request.queryParams}
-                onChange={(params) => updateRequest({ queryParams: params })}
-                placeholder={{ key: 'Parameter', value: 'Value' }}
-              />
-            )}
-
-            {activeSection === 'headers' && (
-              <KeyValueEditor
-                items={request.headers}
-                onChange={(headers) => updateRequest({ headers })}
-                placeholder={{ key: 'Header', value: 'Value' }}
-              />
-            )}
-
-            {activeSection === 'body' && (
-              <div className="space-y-4">
-                <div className="flex gap-2">
-                  {(['none', 'json', 'xml', 'form-data', 'x-www-form-urlencoded', 'raw'] as const).map((type) => (
-                    <button
-                      key={type}
-                      onClick={() => updateRequest({ bodyType: type })}
-                      className={`px-3 py-1.5 text-sm rounded ${
-                        request.bodyType === type
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-muted hover:bg-muted/80'
-                      }`}
-                    >
-                      {type}
-                    </button>
-                  ))}
-                </div>
-
-                {request.bodyType !== 'none' && (
-                  request.bodyType === 'form-data' || request.bodyType === 'x-www-form-urlencoded' ? (
-                    <KeyValueEditor
-                      items={request.formData || []}
-                      onChange={(formData) => updateRequest({ formData })}
-                      placeholder={{ key: 'Key', value: 'Value' }}
-                    />
-                  ) : (
-                    <textarea
-                      value={request.body}
-                      onChange={(e) => updateRequest({ body: e.target.value })}
-                      placeholder={`Enter ${request.bodyType} body`}
-                      className="w-full h-64 px-3 py-2 bg-background border border-input rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring resize-none"
-                    />
-                  )
-                )}
-              </div>
-            )}
-
-            {activeSection === 'auth' && (
-              <div className="space-y-4">
-                <select
-                  value={request.auth.type}
-                  onChange={(e) => updateRequest({ auth: { ...request.auth, type: e.target.value as any } })}
-                  className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                >
-                  <option value="none">No Auth</option>
-                  <option value="bearer">Bearer Token</option>
-                  <option value="basic">Basic Auth</option>
-                  <option value="api-key">API Key</option>
-                </select>
-
-                {request.auth.type === 'bearer' && (
-                  <input
-                    type="text"
-                    value={request.auth.token || ''}
-                    onChange={(e) => updateRequest({ auth: { ...request.auth, token: e.target.value } })}
-                    placeholder="Token"
-                    className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+        <div className="flex-1 overflow-hidden">
+          <ResizablePanels
+            showRightPanel={!!response}
+            defaultLeftWidth={50}
+            minLeftWidth={30}
+            maxLeftWidth={70}
+            leftPanel={
+              <div className="h-full overflow-y-auto p-4">
+                {activeSection === 'params' && (
+                  <KeyValueEditor
+                    items={request.queryParams}
+                    onChange={(params) => updateRequest({ queryParams: params })}
+                    placeholder={{ key: 'Parameter', value: 'Value' }}
                   />
                 )}
 
-                {request.auth.type === 'basic' && (
-                  <>
-                    <input
-                      type="text"
-                      value={request.auth.username || ''}
-                      onChange={(e) => updateRequest({ auth: { ...request.auth, username: e.target.value } })}
-                      placeholder="Username"
-                      className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                    />
-                    <input
-                      type="password"
-                      value={request.auth.password || ''}
-                      onChange={(e) => updateRequest({ auth: { ...request.auth, password: e.target.value } })}
-                      placeholder="Password"
-                      className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                    />
-                  </>
+                {activeSection === 'headers' && (
+                  <KeyValueEditor
+                    items={request.headers}
+                    onChange={(headers) => updateRequest({ headers })}
+                    placeholder={{ key: 'Header', value: 'Value' }}
+                  />
                 )}
 
-                {request.auth.type === 'api-key' && (
-                  <>
-                    <input
-                      type="text"
-                      value={request.auth.apiKeyName || ''}
-                      onChange={(e) => updateRequest({ auth: { ...request.auth, apiKeyName: e.target.value } })}
-                      placeholder="Key Name"
-                      className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                    />
-                    <input
-                      type="text"
-                      value={request.auth.apiKey || ''}
-                      onChange={(e) => updateRequest({ auth: { ...request.auth, apiKey: e.target.value } })}
-                      placeholder="Key Value"
-                      className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                    />
+                {activeSection === 'body' && (
+                  <div className="space-y-4">
+                    <div className="flex gap-2">
+                      {(['none', 'json', 'xml', 'form-data', 'x-www-form-urlencoded', 'raw'] as const).map((type) => (
+                        <button
+                          key={type}
+                          onClick={() => updateRequest({ bodyType: type })}
+                          className={`px-3 py-1.5 text-sm rounded ${
+                            request.bodyType === type
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-muted hover:bg-muted/80'
+                          }`}
+                        >
+                          {type}
+                        </button>
+                      ))}
+                    </div>
+
+                    {request.bodyType !== 'none' && (
+                      request.bodyType === 'form-data' || request.bodyType === 'x-www-form-urlencoded' ? (
+                        <KeyValueEditor
+                          items={request.formData || []}
+                          onChange={(formData) => updateRequest({ formData })}
+                          placeholder={{ key: 'Key', value: 'Value' }}
+                        />
+                      ) : (
+                        <textarea
+                          value={request.body}
+                          onChange={(e) => updateRequest({ body: e.target.value })}
+                          placeholder={`Enter ${request.bodyType} body`}
+                          className="w-full h-64 px-3 py-2 bg-background border border-input rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                        />
+                      )
+                    )}
+                  </div>
+                )}
+
+                {activeSection === 'auth' && (
+                  <div className="space-y-4">
                     <select
-                      value={request.auth.apiKeyLocation || 'header'}
-                      onChange={(e) => updateRequest({ auth: { ...request.auth, apiKeyLocation: e.target.value as any } })}
+                      value={request.auth.type}
+                      onChange={(e) => updateRequest({ auth: { ...request.auth, type: e.target.value as any } })}
                       className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     >
-                      <option value="header">Header</option>
-                      <option value="query">Query Parameter</option>
+                      <option value="none">No Auth</option>
+                      <option value="bearer">Bearer Token</option>
+                      <option value="basic">Basic Auth</option>
+                      <option value="api-key">API Key</option>
                     </select>
-                  </>
+
+                    {request.auth.type === 'bearer' && (
+                      <input
+                        type="text"
+                        value={request.auth.token || ''}
+                        onChange={(e) => updateRequest({ auth: { ...request.auth, token: e.target.value } })}
+                        placeholder="Token"
+                        className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      />
+                    )}
+
+                    {request.auth.type === 'basic' && (
+                      <>
+                        <input
+                          type="text"
+                          value={request.auth.username || ''}
+                          onChange={(e) => updateRequest({ auth: { ...request.auth, username: e.target.value } })}
+                          placeholder="Username"
+                          className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                        />
+                        <input
+                          type="password"
+                          value={request.auth.password || ''}
+                          onChange={(e) => updateRequest({ auth: { ...request.auth, password: e.target.value } })}
+                          placeholder="Password"
+                          className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                        />
+                      </>
+                    )}
+
+                    {request.auth.type === 'api-key' && (
+                      <>
+                        <input
+                          type="text"
+                          value={request.auth.apiKeyName || ''}
+                          onChange={(e) => updateRequest({ auth: { ...request.auth, apiKeyName: e.target.value } })}
+                          placeholder="Key Name"
+                          className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                        />
+                        <input
+                          type="text"
+                          value={request.auth.apiKey || ''}
+                          onChange={(e) => updateRequest({ auth: { ...request.auth, apiKey: e.target.value } })}
+                          placeholder="Key Value"
+                          className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                        />
+                        <select
+                          value={request.auth.apiKeyLocation || 'header'}
+                          onChange={(e) => updateRequest({ auth: { ...request.auth, apiKeyLocation: e.target.value as any } })}
+                          className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                        >
+                          <option value="header">Header</option>
+                          <option value="query">Query Parameter</option>
+                        </select>
+                      </>
+                    )}
+                  </div>
                 )}
               </div>
-            )}
-          </div>
-
-          {/* Response Section */}
-          {response && (
-            <div className="flex-1 border-l border-border">
-              <ResponseViewer response={response} />
-            </div>
-          )}
+            }
+            rightPanel={
+              response ? <ResponseViewer response={response} /> : null
+            }
+          />
         </div>
       </div>
 
