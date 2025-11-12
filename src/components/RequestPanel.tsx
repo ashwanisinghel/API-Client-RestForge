@@ -82,12 +82,12 @@ export default function RequestPanel() {
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* URL Bar */}
-      <div className="p-4 border-b border-border">
-        <div className="flex items-center gap-2 mb-3">
+      <div className="p-4 border-b border-border bg-background">
+        <div className="flex items-stretch gap-2">
           <select
             value={request.method}
             onChange={(e) => updateRequest({ method: e.target.value as HttpMethod })}
-            className="px-3 py-2 bg-background border border-input rounded-md text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-ring"
+            className="px-3 py-2 bg-background border border-border rounded-md text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
           >
             {HTTP_METHODS.map((method) => (
               <option key={method} value={method}>
@@ -99,32 +99,32 @@ export default function RequestPanel() {
             type="text"
             value={request.url}
             onChange={(e) => updateRequest({ url: e.target.value })}
-            placeholder="Enter request URL"
-            className="flex-1 px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            placeholder="https://api.example.com/endpoint"
+            className="flex-1 px-3 py-2 bg-background border border-border rounded-md text-sm font-mono focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
           />
           
           {/* cURL Import/Export Buttons */}
           <button
             onClick={() => openCurlDialog('import')}
-            className="px-3 py-2 border border-border rounded-md hover:bg-muted transition-colors flex items-center gap-2 text-sm"
+            className="px-3 py-2 bg-background border border-border rounded-md text-sm font-medium hover:bg-muted transition-colors flex items-center gap-2"
             title="Import from cURL"
           >
             <Download className="w-4 h-4" />
-            Import cURL
+            Import
           </button>
           <button
             onClick={() => openCurlDialog('export')}
-            className="px-3 py-2 border border-border rounded-md hover:bg-muted transition-colors flex items-center gap-2 text-sm"
+            className="px-3 py-2 bg-background border border-border rounded-md text-sm font-medium hover:bg-muted transition-colors flex items-center gap-2"
             title="Export as cURL"
           >
             <Upload className="w-4 h-4" />
-            Export cURL
+            Export
           </button>
           
           <button
             onClick={handleSendRequest}
             disabled={isLoading || !request.url}
-            className="px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium"
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-semibold hover:bg-primary/90 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <>
@@ -139,29 +139,25 @@ export default function RequestPanel() {
             )}
           </button>
         </div>
-        <input
-          type="text"
-          value={request.name}
-          onChange={(e) => updateRequest({ name: e.target.value })}
-          placeholder="Request name"
-          className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-        />
       </div>
 
       {/* Request Config */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex border-b border-border">
+        <div className="flex border-b border-border bg-muted/30">
           {(['params', 'headers', 'body', 'auth'] as const).map((section) => (
             <button
               key={section}
               onClick={() => setActiveSection(section)}
-              className={`px-4 py-2 text-sm capitalize ${
+              className={`px-6 py-3 text-sm capitalize font-medium transition-colors relative ${
                 activeSection === section
-                  ? 'bg-background border-b-2 border-primary font-medium'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'text-primary bg-background'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
               }`}
             >
               {section}
+              {activeSection === section && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
+              )}
             </button>
           ))}
         </div>
@@ -191,36 +187,33 @@ export default function RequestPanel() {
                 )}
 
                 {activeSection === 'body' && (
-                  <div className="space-y-4">
-                    <div className="flex gap-2">
-                      {(['none', 'json', 'xml', 'form-data', 'x-www-form-urlencoded', 'raw'] as const).map((type) => (
-                        <button
-                          key={type}
-                          onClick={() => updateRequest({ bodyType: type })}
-                          className={`px-3 py-1.5 text-sm rounded ${
-                            request.bodyType === type
-                              ? 'bg-primary text-primary-foreground'
-                              : 'bg-muted hover:bg-muted/80'
-                          }`}
-                        >
-                          {type}
-                        </button>
-                      ))}
-                    </div>
+                  <div className="space-y-3">
+                    <select
+                      value={request.bodyType}
+                      onChange={(e) => updateRequest({ bodyType: e.target.value as any })}
+                      className="px-3 py-2 bg-background border border-border rounded-md text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
+                    >
+                      <option value="none">None</option>
+                      <option value="json">JSON</option>
+                      <option value="xml">XML</option>
+                      <option value="form-data">Form Data</option>
+                      <option value="x-www-form-urlencoded">x-www-form-urlencoded</option>
+                      <option value="raw">Raw</option>
+                    </select>
 
                     {request.bodyType !== 'none' && (
                       request.bodyType === 'form-data' || request.bodyType === 'x-www-form-urlencoded' ? (
                         <KeyValueEditor
                           items={request.formData || []}
                           onChange={(formData) => updateRequest({ formData })}
-                          placeholder={{ key: 'Key', value: 'Value' }}
+                          placeholder={{ key: 'Field', value: 'Value' }}
                         />
                       ) : (
                         <textarea
                           value={request.body}
                           onChange={(e) => updateRequest({ body: e.target.value })}
                           placeholder={`Enter ${request.bodyType} body`}
-                          className="w-full h-64 px-3 py-2 bg-background border border-input rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                          className="w-full h-64 px-3 py-2 bg-background border border-border rounded-md text-sm font-mono focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary resize-none transition-colors"
                         />
                       )
                     )}
@@ -229,71 +222,94 @@ export default function RequestPanel() {
 
                 {activeSection === 'auth' && (
                   <div className="space-y-4">
-                    <select
-                      value={request.auth.type}
-                      onChange={(e) => updateRequest({ auth: { ...request.auth, type: e.target.value as any } })}
-                      className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                    >
-                      <option value="none">No Auth</option>
-                      <option value="bearer">Bearer Token</option>
-                      <option value="basic">Basic Auth</option>
-                      <option value="api-key">API Key</option>
-                    </select>
+                    <div className="flex flex-wrap gap-2">
+                      {(['none', 'bearer', 'basic', 'api-key'] as const).map((type) => (
+                        <button
+                          key={type}
+                          onClick={() => updateRequest({ auth: { ...request.auth, type } })}
+                          className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                            request.auth.type === type
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-muted hover:bg-muted/80 text-foreground'
+                          }`}
+                        >
+                          {type === 'none' ? 'No Auth' : type === 'bearer' ? 'Bearer Token' : type === 'basic' ? 'Basic Auth' : 'API Key'}
+                        </button>
+                      ))}
+                    </div>
 
                     {request.auth.type === 'bearer' && (
-                      <input
-                        type="text"
-                        value={request.auth.token || ''}
-                        onChange={(e) => updateRequest({ auth: { ...request.auth, token: e.target.value } })}
-                        placeholder="Token"
-                        className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                      />
+                      <div className="space-y-2">
+                        <label className="block text-sm font-medium text-foreground">Token</label>
+                        <input
+                          type="text"
+                          value={request.auth.token || ''}
+                          onChange={(e) => updateRequest({ auth: { ...request.auth, token: e.target.value } })}
+                          placeholder="Enter your bearer token"
+                          className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm font-mono focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
+                        />
+                      </div>
                     )}
 
                     {request.auth.type === 'basic' && (
-                      <>
-                        <input
-                          type="text"
-                          value={request.auth.username || ''}
-                          onChange={(e) => updateRequest({ auth: { ...request.auth, username: e.target.value } })}
-                          placeholder="Username"
-                          className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                        />
-                        <input
-                          type="password"
-                          value={request.auth.password || ''}
-                          onChange={(e) => updateRequest({ auth: { ...request.auth, password: e.target.value } })}
-                          placeholder="Password"
-                          className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                        />
-                      </>
+                      <div className="space-y-3">
+                        <div className="space-y-2">
+                          <label className="block text-sm font-medium text-foreground">Username</label>
+                          <input
+                            type="text"
+                            value={request.auth.username || ''}
+                            onChange={(e) => updateRequest({ auth: { ...request.auth, username: e.target.value } })}
+                            placeholder="Enter username"
+                            className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="block text-sm font-medium text-foreground">Password</label>
+                          <input
+                            type="password"
+                            value={request.auth.password || ''}
+                            onChange={(e) => updateRequest({ auth: { ...request.auth, password: e.target.value } })}
+                            placeholder="Enter password"
+                            className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
+                          />
+                        </div>
+                      </div>
                     )}
 
                     {request.auth.type === 'api-key' && (
-                      <>
-                        <input
-                          type="text"
-                          value={request.auth.apiKeyName || ''}
-                          onChange={(e) => updateRequest({ auth: { ...request.auth, apiKeyName: e.target.value } })}
-                          placeholder="Key Name"
-                          className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                        />
-                        <input
-                          type="text"
-                          value={request.auth.apiKey || ''}
-                          onChange={(e) => updateRequest({ auth: { ...request.auth, apiKey: e.target.value } })}
-                          placeholder="Key Value"
-                          className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                        />
-                        <select
-                          value={request.auth.apiKeyLocation || 'header'}
-                          onChange={(e) => updateRequest({ auth: { ...request.auth, apiKeyLocation: e.target.value as any } })}
-                          className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                        >
-                          <option value="header">Header</option>
-                          <option value="query">Query Parameter</option>
-                        </select>
-                      </>
+                      <div className="space-y-3">
+                        <div className="space-y-2">
+                          <label className="block text-sm font-medium text-foreground">Key</label>
+                          <input
+                            type="text"
+                            value={request.auth.apiKeyName || ''}
+                            onChange={(e) => updateRequest({ auth: { ...request.auth, apiKeyName: e.target.value } })}
+                            placeholder="e.g., X-API-Key"
+                            className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm font-mono focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="block text-sm font-medium text-foreground">Value</label>
+                          <input
+                            type="text"
+                            value={request.auth.apiKey || ''}
+                            onChange={(e) => updateRequest({ auth: { ...request.auth, apiKey: e.target.value } })}
+                            placeholder="Enter your API key"
+                            className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm font-mono focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="block text-sm font-medium text-foreground">Add to</label>
+                          <select
+                            value={request.auth.apiKeyLocation || 'header'}
+                            onChange={(e) => updateRequest({ auth: { ...request.auth, apiKeyLocation: e.target.value as any } })}
+                            className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
+                          >
+                            <option value="header">Header</option>
+                            <option value="query">Query Params</option>
+                          </select>
+                        </div>
+                      </div>
                     )}
                   </div>
                 )}

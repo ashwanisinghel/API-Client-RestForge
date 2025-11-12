@@ -1,46 +1,44 @@
 import { useState } from 'react';
-import { History, FolderOpen, Plus } from 'lucide-react';
-import { useCollectionsStore } from '@/stores/collectionsStore';
+import { History, FolderOpen } from 'lucide-react';
 import HistoryManager from './HistoryManager';
+import CollectionsManager from './CollectionsManager';
 
 type SidebarView = 'history' | 'collections';
 
 export default function Sidebar() {
   const [view, setView] = useState<SidebarView>('history');
-  const { collections, addCollection } = useCollectionsStore();
-
-  const handleNewCollection = () => {
-    const name = prompt('Collection name:');
-    if (name) {
-      addCollection(name);
-    }
-  };
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* View Tabs */}
-      <div className="flex border-b border-border">
+      <div className="flex border-b border-border/50 bg-muted/10">
         <button
           onClick={() => setView('history')}
-          className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm ${
+          className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-all duration-200 relative ${
             view === 'history'
-              ? 'bg-background border-b-2 border-primary'
-              : 'hover:bg-muted'
+              ? 'text-primary bg-background/60'
+              : 'text-muted-foreground hover:text-foreground hover:bg-background/30'
           }`}
         >
           <History className="w-4 h-4" />
           History
+          {view === 'history' && (
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary to-primary/80 rounded-full" />
+          )}
         </button>
         <button
           onClick={() => setView('collections')}
-          className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm ${
+          className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-all duration-200 relative ${
             view === 'collections'
-              ? 'bg-background border-b-2 border-primary'
-              : 'hover:bg-muted'
+              ? 'text-primary bg-background/60'
+              : 'text-muted-foreground hover:text-foreground hover:bg-background/30'
           }`}
         >
           <FolderOpen className="w-4 h-4" />
           Collections
+          {view === 'collections' && (
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary to-primary/80 rounded-full" />
+          )}
         </button>
       </div>
 
@@ -49,34 +47,7 @@ export default function Sidebar() {
         {view === 'history' ? (
           <HistoryManager />
         ) : (
-          <div className="space-y-1">
-            {collections.length === 0 ? (
-              <p className="text-sm text-muted-foreground p-4 text-center">
-                No collections yet
-              </p>
-            ) : (
-              collections.map((collection) => (
-                <div
-                  key={collection.id}
-                  className="p-3 hover:bg-muted rounded-md"
-                >
-                  <p className="font-medium">{collection.name}</p>
-                  {collection.description && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {collection.description}
-                    </p>
-                  )}
-                </div>
-              ))
-            )}
-            <button
-              onClick={handleNewCollection}
-              className="w-full flex items-center justify-center gap-2 p-3 text-sm text-primary hover:bg-muted rounded-md transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              New Collection
-            </button>
-          </div>
+          <CollectionsManager />
         )}
       </div>
     </div>

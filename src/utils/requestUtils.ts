@@ -50,9 +50,9 @@ export function formatTime(ms: number): string {
 }
 
 export function getStatusColor(status: number): string {
-  if (status >= 200 && status < 300) return 'text-green-600 dark:text-green-400';
-  if (status >= 300 && status < 400) return 'text-yellow-600 dark:text-yellow-400';
-  if (status >= 400 && status < 500) return 'text-orange-600 dark:text-orange-400';
+  if (status >= 200 && status < 300) return 'text-emerald-600 dark:text-emerald-400';
+  if (status >= 300 && status < 400) return 'text-amber-600 dark:text-amber-400';
+  if (status >= 400 && status < 500) return 'text-indigo-600 dark:text-indigo-400';
   if (status >= 500) return 'text-red-600 dark:text-red-400';
   return 'text-muted-foreground';
 }
