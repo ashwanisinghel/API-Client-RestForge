@@ -108,7 +108,7 @@ export default function RequestPanel() {
             className="px-3 py-2 border border-border rounded-md hover:bg-muted transition-colors flex items-center gap-2 text-sm"
             title="Import from cURL"
           >
-            <Upload className="w-4 h-4" />
+            <Download className="w-4 h-4" />
             Import cURL
           </button>
           <button
@@ -116,7 +116,7 @@ export default function RequestPanel() {
             className="px-3 py-2 border border-border rounded-md hover:bg-muted transition-colors flex items-center gap-2 text-sm"
             title="Export as cURL"
           >
-            <Download className="w-4 h-4" />
+            <Upload className="w-4 h-4" />
             Export cURL
           </button>
           
