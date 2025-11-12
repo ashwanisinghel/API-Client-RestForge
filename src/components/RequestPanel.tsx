@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { Send, Loader2 } from 'lucide-react';
+import { Send, Loader2, Download, Upload } from 'lucide-react';
 import { useTabsStore } from '@/stores/tabsStore';
 import { useHistoryStore } from '@/stores/historyStore';
 import { useEnvironmentsStore } from '@/stores/environmentsStore';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { executeRequest } from '@/utils/httpClient';
-import { HttpMethod } from '@/types';
+import { HttpMethod, RequestConfig } from '@/types';
 import KeyValueEditor from './KeyValueEditor';
 import ResponseViewer from './ResponseViewer';
+import CurlDialog from './CurlDialog';
 
 const HTTP_METHODS: HttpMethod[] = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'];
 
@@ -17,6 +18,10 @@ export default function RequestPanel() {
   const { environments } = useEnvironmentsStore();
   const { activeEnvironment } = useSettingsStore();
   const [activeSection, setActiveSection] = useState<'params' | 'headers' | 'body' | 'auth'>('params');
+  const [curlDialog, setCurlDialog] = useState<{ isOpen: boolean; mode: 'import' | 'export' }>({
+    isOpen: false,
+    mode: 'import'
+  });
 
   const activeTab = tabs.find((t) => t.id === activeTabId);
 
@@ -61,6 +66,18 @@ export default function RequestPanel() {
     updateTabRequest(activeTabId!, { ...request, ...updates });
   };
 
+  const handleImportCurl = (importedRequest: RequestConfig) => {
+    updateTabRequest(activeTabId!, importedRequest);
+  };
+
+  const openCurlDialog = (mode: 'import' | 'export') => {
+    setCurlDialog({ isOpen: true, mode });
+  };
+
+  const closeCurlDialog = () => {
+    setCurlDialog({ isOpen: false, mode: 'import' });
+  };
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* URL Bar */}
@@ -84,6 +101,25 @@ export default function RequestPanel() {
             placeholder="Enter request URL"
             className="flex-1 px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           />
+          
+          {/* cURL Import/Export Buttons */}
+          <button
+            onClick={() => openCurlDialog('import')}
+            className="px-3 py-2 border border-border rounded-md hover:bg-muted transition-colors flex items-center gap-2 text-sm"
+            title="Import from cURL"
+          >
+            <Upload className="w-4 h-4" />
+            Import cURL
+          </button>
+          <button
+            onClick={() => openCurlDialog('export')}
+            className="px-3 py-2 border border-border rounded-md hover:bg-muted transition-colors flex items-center gap-2 text-sm"
+            title="Export as cURL"
+          >
+            <Download className="w-4 h-4" />
+            Export cURL
+          </button>
+          
           <button
             onClick={handleSendRequest}
             disabled={isLoading || !request.url}
@@ -265,6 +301,15 @@ export default function RequestPanel() {
           )}
         </div>
       </div>
+
+      {/* cURL Dialog */}
+      <CurlDialog
+        isOpen={curlDialog.isOpen}
+        onClose={closeCurlDialog}
+        mode={curlDialog.mode}
+        currentRequest={request}
+        onImport={handleImportCurl}
+      />
     </div>
   );
 }

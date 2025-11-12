@@ -1,10 +1,44 @@
-import { fetch as tauriFetch, ResponseType, Body } from '@tauri-apps/api/http';
 import { RequestConfig, ResponseData, KeyValuePair } from '@/types';
 import { replaceVariables } from './requestUtils';
+
+// Check if we're in Tauri environment
+const isTauri = typeof window !== 'undefined' && (window as any).__TAURI_IPC__;
+
+// Dynamic imports for Tauri APIs
+let tauriFetch: any;
+let ResponseType: any;
+let Body: any;
+
+if (isTauri) {
+  import('@tauri-apps/api/http').then((module) => {
+    tauriFetch = module.fetch;
+    ResponseType = module.ResponseType;
+    Body = module.Body;
+  });
+}
 
 interface ExecuteRequestOptions {
   request: RequestConfig;
   variables?: KeyValuePair[];
+}
+
+// Browser-compatible fetch function
+async function browserFetch(url: string, options: any): Promise<any> {
+  const response = await fetch(url, {
+    method: options.method,
+    headers: options.headers,
+    body: options.body,
+    mode: 'cors',
+  });
+
+  const responseText = await response.text();
+  
+  return {
+    status: response.status,
+    ok: response.ok,
+    headers: Object.fromEntries(response.headers.entries()),
+    data: responseText,
+  };
 }
 
 export async function executeRequest({ request, variables = [] }: ExecuteRequestOptions): Promise<ResponseData> {
@@ -57,34 +91,62 @@ export async function executeRequest({ request, variables = [] }: ExecuteRequest
     }
 
     // Prepare body
-    let body: Body | undefined;
+    let body: any;
     if (request.method !== 'GET' && request.method !== 'HEAD' && request.bodyType !== 'none') {
       if (request.bodyType === 'json') {
         const bodyText = replaceVariables(request.body, variables);
-        body = Body.json(JSON.parse(bodyText));
-        if (!headers['Content-Type']) {
-          headers['Content-Type'] = 'application/json';
+        if (isTauri && Body) {
+          body = Body.json(JSON.parse(bodyText));
+        } else {
+          body = bodyText;
+          if (!headers['Content-Type']) {
+            headers['Content-Type'] = 'application/json';
+          }
         }
       } else if (request.bodyType === 'form-data' && request.formData) {
-        const formData: Record<string, string> = {};
-        request.formData
-          .filter((f) => f.enabled && f.key)
-          .forEach((field) => {
-            formData[field.key] = replaceVariables(field.value, variables);
-          });
-        body = Body.form(formData);
+        if (isTauri && Body) {
+          const formData: Record<string, string> = {};
+          request.formData
+            .filter((f) => f.enabled && f.key)
+            .forEach((field) => {
+              formData[field.key] = replaceVariables(field.value, variables);
+            });
+          body = Body.form(formData);
+        } else {
+          const formData = new FormData();
+          request.formData
+            .filter((f) => f.enabled && f.key)
+            .forEach((field) => {
+              formData.append(field.key, replaceVariables(field.value, variables));
+            });
+          body = formData;
+        }
       } else if (request.bodyType === 'x-www-form-urlencoded' && request.formData) {
-        const formData: Record<string, string> = {};
-        request.formData
-          .filter((f) => f.enabled && f.key)
-          .forEach((field) => {
-            formData[field.key] = replaceVariables(field.value, variables);
-          });
-        body = Body.form(formData);
+        if (isTauri && Body) {
+          const formData: Record<string, string> = {};
+          request.formData
+            .filter((f) => f.enabled && f.key)
+            .forEach((field) => {
+              formData[field.key] = replaceVariables(field.value, variables);
+            });
+          body = Body.form(formData);
+        } else {
+          const params = new URLSearchParams();
+          request.formData
+            .filter((f) => f.enabled && f.key)
+            .forEach((field) => {
+              params.append(field.key, replaceVariables(field.value, variables));
+            });
+          body = params.toString();
+        }
         headers['Content-Type'] = 'application/x-www-form-urlencoded';
       } else if (request.bodyType === 'raw' || request.bodyType === 'xml') {
         const bodyText = replaceVariables(request.body, variables);
-        body = Body.text(bodyText);
+        if (isTauri && Body) {
+          body = Body.text(bodyText);
+        } else {
+          body = bodyText;
+        }
         if (request.bodyType === 'xml' && !headers['Content-Type']) {
           headers['Content-Type'] = 'application/xml';
         }
@@ -94,12 +156,21 @@ export async function executeRequest({ request, variables = [] }: ExecuteRequest
     // Execute request
     const method = request.method === 'CUSTOM' ? request.customMethod || 'GET' : request.method;
     
-    const response = await tauriFetch(url, {
-      method,
-      headers,
-      body,
-      responseType: ResponseType.Text,
-    });
+    let response: any;
+    if (isTauri && tauriFetch) {
+      response = await tauriFetch(url, {
+        method,
+        headers,
+        body,
+        responseType: ResponseType.Text,
+      });
+    } else {
+      response = await browserFetch(url, {
+        method,
+        headers,
+        body,
+      });
+    }
 
     const endTime = performance.now();
     const time = endTime - startTime;

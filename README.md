@@ -13,6 +13,7 @@ A standalone API testing tool built with Tauri and React - lightweight, fast, an
 - ✅ Collections: Organize requests into folders
 - ✅ Environment Variables: Use {{variable}} syntax in requests
 - ✅ Multiple Tabs: Work on multiple requests simultaneously
+- ✅ **cURL Import/Export**: Import requests from cURL commands and export requests as cURL
 - ✅ Dark/Light Theme: Automatic system theme detection
 - ✅ Keyboard Shortcuts: Ctrl+T (new tab), Ctrl+Enter (send request)
 
@@ -91,6 +92,35 @@ The build is optimized for size and performance:
    - **Auth**: Select authentication method and enter credentials
 4. **Send**: Click Send button or press Ctrl+Enter
 5. **View Response**: See formatted response with status, headers, timing
+
+### cURL Import/Export
+
+**Import from cURL:**
+1. Click "Import cURL" button in the request panel or sidebar
+2. Paste your cURL command in the dialog
+3. Click "Import" to convert it to a RestForge request
+
+**Export as cURL:**
+1. Configure your request in RestForge
+2. Click "Export cURL" button in the request panel
+3. Copy the generated cURL command or download as a file
+
+**Supported cURL features:**
+- HTTP methods (`-X GET/POST/PUT/DELETE`)
+- Headers (`-H "Content-Type: application/json"`)
+- Request body (`-d "data"` or `--data`)
+- Form data (`-F "key=value"`)
+- Basic authentication (`-u username:password`)
+- Bearer tokens (`-H "Authorization: Bearer token"`)
+- Custom user agents (`-A "User-Agent"`)
+
+**Example cURL import:**
+```bash
+curl -X POST 'https://api.example.com/users' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer your-token' \
+  -d '{"name": "John Doe", "email": "john@example.com"}'
+```
 
 ### Using Environment Variables
 
