@@ -74,23 +74,23 @@ export default function CurlDialog({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-background border border-border rounded-lg shadow-lg w-full max-w-2xl mx-4">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
+      <div className="modern-card w-full max-w-3xl mx-4 animate-in shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border">
-          <h2 className="text-lg font-semibold">
+        <div className="flex items-center justify-between p-6 border-b border-border/50 bg-gradient-to-r from-background/50 to-muted/10">
+          <h2 className="text-xl font-semibold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
             {mode === 'import' ? 'Import from cURL' : 'Export as cURL'}
           </h2>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-muted rounded-md transition-colors"
+            className="p-2 hover:bg-muted/50 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-4">
+        <div className="p-6">
           {mode === 'import' ? (
             <div className="space-y-4">
               <div>
@@ -104,7 +104,7 @@ export default function CurlDialog({
                     setError('');
                   }}
                   placeholder={`curl -X POST 'https://api.example.com/data' -H 'Content-Type: application/json' -d '{"key": "value"}'`}
-                  className="w-full h-32 px-3 py-2 border border-border rounded-md bg-background text-foreground font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="modern-textarea h-40 font-mono text-sm resize-none shadow-sm"
                 />
               </div>
               
@@ -112,16 +112,16 @@ export default function CurlDialog({
                 <div className="text-red-500 text-sm">{error}</div>
               )}
 
-              <div className="flex justify-end space-x-2">
+              <div className="flex justify-end space-x-3">
                 <button
                   onClick={onClose}
-                  className="px-4 py-2 text-sm border border-border rounded-md hover:bg-muted transition-colors"
+                  className="modern-button-secondary px-6 py-2.5"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleImport}
-                  className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                  className="modern-button-primary px-6 py-2.5 flex items-center space-x-2"
                 >
                   <Upload className="w-4 h-4" />
                   <span>Import</span>
@@ -137,27 +137,27 @@ export default function CurlDialog({
                 <textarea
                   value={curlCommand}
                   readOnly
-                  className="w-full h-32 px-3 py-2 border border-border rounded-md bg-muted text-foreground font-mono text-sm resize-none focus:outline-none"
+                  className="modern-textarea h-40 bg-muted/50 font-mono text-sm resize-none cursor-text"
                 />
               </div>
 
-              <div className="flex justify-end space-x-2">
+              <div className="flex justify-end space-x-3">
                 <button
                   onClick={onClose}
-                  className="px-4 py-2 text-sm border border-border rounded-md hover:bg-muted transition-colors"
+                  className="modern-button-secondary px-6 py-2.5"
                 >
                   Close
                 </button>
                 <button
                   onClick={handleDownload}
-                  className="px-4 py-2 text-sm border border-border rounded-md hover:bg-muted transition-colors flex items-center space-x-2"
+                  className="modern-button-secondary px-6 py-2.5 flex items-center space-x-2"
                 >
                   <Download className="w-4 h-4" />
                   <span>Download</span>
                 </button>
                 <button
                   onClick={handleCopy}
-                  className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                  className="modern-button-primary px-6 py-2.5 flex items-center space-x-2"
                 >
                   <Copy className="w-4 h-4" />
                   <span>{copied ? 'Copied!' : 'Copy'}</span>

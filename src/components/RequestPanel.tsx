@@ -82,12 +82,12 @@ export default function RequestPanel() {
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* URL Bar */}
-      <div className="p-4 border-b border-border">
-        <div className="flex items-center gap-2 mb-3">
+      <div className="p-4 border-b border-border/50 bg-gradient-to-r from-background/50 to-muted/10">
+        <div className="flex items-stretch gap-2 mb-3">
           <select
             value={request.method}
             onChange={(e) => updateRequest({ method: e.target.value as HttpMethod })}
-            className="px-3 py-2 bg-background border border-input rounded-md text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-ring"
+            className="modern-select font-semibold w-20 text-xs px-2 py-2 flex-shrink-0"
           >
             {HTTP_METHODS.map((method) => (
               <option key={method} value={method}>
@@ -99,32 +99,32 @@ export default function RequestPanel() {
             type="text"
             value={request.url}
             onChange={(e) => updateRequest({ url: e.target.value })}
-            placeholder="Enter request URL"
-            className="flex-1 px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            placeholder="https://api.example.com/endpoint"
+            className="modern-input flex-1 text-sm px-3 py-2 bg-background border-border font-mono"
           />
           
           {/* cURL Import/Export Buttons */}
           <button
             onClick={() => openCurlDialog('import')}
-            className="px-3 py-2 border border-border rounded-md hover:bg-muted transition-colors flex items-center gap-2 text-sm"
+            className="modern-button-secondary px-3 py-2 flex items-center gap-1.5 text-xs flex-shrink-0"
             title="Import from cURL"
           >
-            <Download className="w-4 h-4" />
-            Import cURL
+            <Download className="w-3.5 h-3.5" />
+            Import
           </button>
           <button
             onClick={() => openCurlDialog('export')}
-            className="px-3 py-2 border border-border rounded-md hover:bg-muted transition-colors flex items-center gap-2 text-sm"
+            className="modern-button-secondary px-3 py-2 flex items-center gap-1.5 text-xs flex-shrink-0"
             title="Export as cURL"
           >
-            <Upload className="w-4 h-4" />
-            Export cURL
+            <Upload className="w-3.5 h-3.5" />
+            Export
           </button>
           
           <button
             onClick={handleSendRequest}
             disabled={isLoading || !request.url}
-            className="px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium"
+            className="modern-button-primary px-6 py-2 flex items-center gap-2 font-semibold text-sm flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             {isLoading ? (
               <>
@@ -139,29 +139,25 @@ export default function RequestPanel() {
             )}
           </button>
         </div>
-        <input
-          type="text"
-          value={request.name}
-          onChange={(e) => updateRequest({ name: e.target.value })}
-          placeholder="Request name"
-          className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-        />
       </div>
 
       {/* Request Config */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex border-b border-border">
+        <div className="flex border-b border-border/50 bg-muted/20">
           {(['params', 'headers', 'body', 'auth'] as const).map((section) => (
             <button
               key={section}
               onClick={() => setActiveSection(section)}
-              className={`px-4 py-2 text-sm capitalize ${
+              className={`px-6 py-3 text-sm capitalize font-medium transition-all duration-200 relative ${
                 activeSection === section
-                  ? 'bg-background border-b-2 border-primary font-medium'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'text-primary bg-background/80 shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-background/40'
               }`}
             >
               {section}
+              {activeSection === section && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary to-primary/80 rounded-full" />
+              )}
             </button>
           ))}
         </div>

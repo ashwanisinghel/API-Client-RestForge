@@ -154,12 +154,15 @@ export default function HistoryManager() {
           )}
 
           <div className="flex items-center gap-2 mb-1">
-            <span className={`text-xs font-semibold px-2 py-0.5 rounded ${
-              item.request.method === 'GET' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' :
-              item.request.method === 'POST' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' :
-              item.request.method === 'PUT' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300' :
-              item.request.method === 'DELETE' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300' :
-              'bg-muted text-muted-foreground'
+            <span className={`${
+              item.request.method === 'GET' ? 'method-get' :
+              item.request.method === 'POST' ? 'method-post' :
+              item.request.method === 'PUT' ? 'method-put' :
+              item.request.method === 'DELETE' ? 'method-delete' :
+              item.request.method === 'PATCH' ? 'method-patch' :
+              item.request.method === 'HEAD' ? 'method-head' :
+              item.request.method === 'OPTIONS' ? 'method-options' :
+              'method-badge bg-muted text-muted-foreground ring-muted-foreground/20'
             }`}>
               {item.request.method}
             </span>

@@ -41,19 +41,26 @@ export default function Layout() {
   };
 
   return (
-    <div className="h-screen bg-background text-foreground">
+    <div className="h-screen bg-gradient-to-br from-background via-background to-muted/20 text-foreground">
       <ResizablePanels
         showRightPanel={true}
         defaultLeftWidth={20}
         minLeftWidth={15}
         maxLeftWidth={40}
         leftPanel={
-          <div className="flex flex-col h-full">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-              <h1 className="text-xl font-bold">RestForge</h1>
+          <div className="flex flex-col h-full glass-effect">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border/50 bg-gradient-to-r from-background/80 to-muted/20">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
+                  <span className="text-primary-foreground font-bold text-sm">RF</span>
+                </div>
+                <h1 className="text-xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+                  RestForge
+                </h1>
+              </div>
               <button
                 onClick={cycleTheme}
-                className="p-2 hover:bg-muted rounded-md transition-colors"
+                className="p-2.5 hover:bg-muted/50 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95"
                 title="Toggle theme"
               >
                 {getThemeIcon()}
