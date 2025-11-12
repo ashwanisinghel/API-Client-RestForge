@@ -11,7 +11,7 @@
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
-    --primary: 262 83% 58%;
+    --primary: 280 100% 70%;
     --primary-foreground: 0 0% 98%;
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
@@ -23,12 +23,13 @@
     --destructive-foreground: 0 0% 98%;
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 262 83% 58%;
+    --ring: 280 100% 70%;
     --radius: 0.75rem;
     
-    /* Modern gradients and effects */
-    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%) 0%, hsl(252 83% 68%) 100%);
+    /* RestForge gradient colors */
+    --gradient-primary: linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #F97316 100%);
     --gradient-secondary: linear-gradient(135deg, hsl(240 4.8% 95.9%) 0%, hsl(240 5.9% 90%) 100%);
+    --gradient-restforge: linear-gradient(135deg, #8B5CF6 0%, #EC4899 30%, #EF4444 70%, #F97316 100%);
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
@@ -43,7 +44,7 @@
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 262 83% 58%;
+    --primary: 280 100% 70%;
     --primary-foreground: 0 0% 98%;
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
@@ -55,11 +56,12 @@
     --destructive-foreground: 0 0% 98%;
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 262 83% 58%;
+    --ring: 280 100% 70%;
     
     /* Dark theme gradients and effects */
-    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%) 0%, hsl(252 83% 68%) 100%);
+    --gradient-primary: linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #F97316 100%);
     --gradient-secondary: linear-gradient(135deg, hsl(240 3.7% 15.9%) 0%, hsl(240 3.7% 20%) 100%);
+    --gradient-restforge: linear-gradient(135deg, #8B5CF6 0%, #EC4899 30%, #EF4444 70%, #F97316 100%);
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
@@ -120,8 +122,8 @@
   }
   
   .modern-button-primary {
-    @apply modern-button bg-primary text-primary-foreground shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98];
-    background: var(--gradient-primary);
+    @apply modern-button text-white shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98];
+    background: var(--gradient-restforge);
   }
   
   .modern-button-secondary {
@@ -229,5 +231,25 @@
     to {
       opacity: 1;
     }
+  }
+  
+  /* RestForge branding utilities */
+  .restforge-gradient {
+    background: var(--gradient-restforge);
+  }
+  
+  .restforge-text {
+    background: var(--gradient-restforge);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .restforge-border {
+    border-image: var(--gradient-restforge) 1;
+  }
+  
+  .restforge-shadow {
+    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3), 0 8px 32px rgba(236, 72, 153, 0.2);
   }
 }

@@ -3,11 +3,23 @@ import { Trash2, Check, X, CheckSquare, MoreVertical, Edit, FolderPlus } from 'l
 import { useHistoryStore } from '@/stores/historyStore';
 import { useTabsStore } from '@/stores/tabsStore';
 import { useCollectionsStore } from '@/stores/collectionsStore';
+import { useToastContext } from '@/contexts/ToastContext';
 
 export default function HistoryManager() {
   const { history, deleteHistoryItem, clearHistory, updateHistoryItem } = useHistoryStore();
   const { addTab } = useTabsStore();
   const { collections, addRequestToCollection } = useCollectionsStore();
+  const { showToast } = useToastContext();
+  
+  // Debug: Log collections
+  console.log('HistoryManager - Available collections:', collections);
+  
+  // Test function to create a collection
+  const createTestCollection = () => {
+    const { addCollection } = useCollectionsStore.getState();
+    addCollection('Test Collection', 'A test collection for debugging');
+    console.log('Created test collection');
+  };
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
@@ -98,12 +110,33 @@ export default function HistoryManager() {
     e.preventDefault();
     e.stopPropagation();
     const collection = collections.find(c => c.id === collectionId);
-    addRequestToCollection(collectionId, item.request);
-    setActiveMenu(null);
+    console.log('Adding request to collection:', {
+      collectionId,
+      collectionName: collection?.name,
+      request: item.request,
+      requestDetails: {
+        method: item.request.method,
+        url: item.request.url,
+        name: item.request.name
+      }
+    });
     
-    // Simple success feedback
-    if (collection) {
-      console.log(`Added "${item.request.name || 'Untitled Request'}" to "${collection.name}"`);
+    try {
+      addRequestToCollection(collectionId, item.request);
+      setActiveMenu(null);
+      
+      // Show success toast
+      if (collection) {
+        try {
+          showToast(`Added "${item.request.name || 'Untitled Request'}" to "${collection.name}"`, 'success');
+        } catch (toastError) {
+          console.log('Toast error:', toastError);
+          // Fallback: just log success
+          console.log(`Successfully added "${item.request.name || 'Untitled Request'}" to "${collection.name}"`);
+        }
+      }
+    } catch (error) {
+      console.error('Error adding to collection:', error);
     }
   };
 

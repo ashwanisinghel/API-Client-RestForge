@@ -9,6 +9,8 @@ import Sidebar from './Sidebar';
 import RequestPanel from './RequestPanel';
 import TabBar from './TabBar';
 import ResizablePanels from './ResizablePanels';
+import Logo from './Logo';
+import { ToastProvider } from '@/contexts/ToastContext';
 
 export default function Layout() {
   const { theme, setTheme } = useSettingsStore();
@@ -41,41 +43,36 @@ export default function Layout() {
   };
 
   return (
-    <div className="h-screen bg-gradient-to-br from-background via-background to-muted/20 text-foreground">
-      <ResizablePanels
-        showRightPanel={true}
-        defaultLeftWidth={20}
-        minLeftWidth={15}
-        maxLeftWidth={40}
-        leftPanel={
-          <div className="flex flex-col h-full glass-effect">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-border/50 bg-gradient-to-r from-background/80 to-muted/20">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-sm">RF</span>
-                </div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
-                  RestForge
-                </h1>
+    <ToastProvider>
+      <div className="h-screen bg-gradient-to-br from-background via-background to-purple-50/20 dark:to-purple-950/20 text-foreground">
+        <ResizablePanels
+          showRightPanel={true}
+          defaultLeftWidth={20}
+          minLeftWidth={15}
+          maxLeftWidth={40}
+          leftPanel={
+            <div className="flex flex-col h-full glass-effect">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-border/50 bg-gradient-to-r from-background/80 to-muted/20">
+                <Logo size="md" showText={true} />
+                <button
+                  onClick={cycleTheme}
+                  className="p-2.5 hover:bg-muted/50 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95"
+                  title="Toggle theme"
+                >
+                  {getThemeIcon()}
+                </button>
               </div>
-              <button
-                onClick={cycleTheme}
-                className="p-2.5 hover:bg-muted/50 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95"
-                title="Toggle theme"
-              >
-                {getThemeIcon()}
-              </button>
+              <Sidebar />
             </div>
-            <Sidebar />
-          </div>
-        }
-        rightPanel={
-          <div className="flex flex-col h-full">
-            <TabBar />
-            <RequestPanel />
-          </div>
-        }
-      />
-    </div>
+          }
+          rightPanel={
+            <div className="flex flex-col h-full">
+              <TabBar />
+              <RequestPanel />
+            </div>
+          }
+        />
+      </div>
+    </ToastProvider>
   );
 }

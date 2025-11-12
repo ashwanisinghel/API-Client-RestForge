@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ResponseData } from '@/types';
 import { formatBytes, formatTime, getStatusColor, tryFormatJson } from '@/utils/requestUtils';
+import JsonViewer from './JsonViewer';
 
 interface ResponseViewerProps {
   response: ResponseData;
@@ -88,14 +89,18 @@ export default function ResponseViewer({ response }: ResponseViewerProps) {
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-4">
         {view === 'body' ? (
-          <pre className="text-sm font-mono whitespace-pre-wrap break-words">
-            {formattedBody}
-          </pre>
+          format === 'pretty' && response.headers['content-type']?.includes('application/json') ? (
+            <JsonViewer json={formattedBody} />
+          ) : (
+            <pre className="text-sm font-mono whitespace-pre-wrap break-words">
+              {formattedBody}
+            </pre>
+          )
         ) : (
           <div className="space-y-2">
             {Object.entries(response.headers).map(([key, value]) => (
               <div key={key} className="flex gap-4 py-2 border-b border-border">
-                <span className="font-medium min-w-[200px]">{key}</span>
+                <span className="font-medium min-w-[200px] text-blue-600 dark:text-blue-400">{key}</span>
                 <span className="text-muted-foreground break-all">{value}</span>
               </div>
             ))}

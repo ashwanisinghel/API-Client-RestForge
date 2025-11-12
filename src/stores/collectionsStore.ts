@@ -7,6 +7,8 @@ interface CollectionsState {
   deleteCollection: (id: string) => void;
   updateCollection: (id: string, updates: Partial<Collection>) => void;
   addRequestToCollection: (collectionId: string, request: any) => void;
+  removeRequestFromCollection: (collectionId: string, requestId: string) => void;
+  updateRequestInCollection: (collectionId: string, requestId: string, updates: any) => void;
   loadCollections: () => Promise<void>;
   saveCollections: () => Promise<void>;
 }
@@ -47,10 +49,43 @@ export const useCollectionsStore = create<CollectionsState>((set, get) => ({
   },
 
   addRequestToCollection: (collectionId, request) => {
+    console.log('Store: Adding request to collection', { collectionId, request });
+    const currentState = get();
+    console.log('Store: Current collections before add:', currentState.collections);
+    
+    set((state) => {
+      const updatedCollections = state.collections.map((c) =>
+        c.id === collectionId 
+          ? { ...c, requests: [...c.requests, { ...request, id: crypto.randomUUID() }] }
+          : c
+      );
+      console.log('Store: Updated collections after add:', updatedCollections);
+      return { collections: updatedCollections };
+    });
+    get().saveCollections();
+  },
+
+  removeRequestFromCollection: (collectionId, requestId) => {
     set((state) => ({
       collections: state.collections.map((c) =>
         c.id === collectionId 
-          ? { ...c, requests: [...c.requests, { ...request, id: crypto.randomUUID() }] }
+          ? { ...c, requests: c.requests.filter(r => r.id !== requestId) }
+          : c
+      ),
+    }));
+    get().saveCollections();
+  },
+
+  updateRequestInCollection: (collectionId, requestId, updates) => {
+    set((state) => ({
+      collections: state.collections.map((c) =>
+        c.id === collectionId 
+          ? { 
+              ...c, 
+              requests: c.requests.map(r => 
+                r.id === requestId ? { ...r, ...updates } : r
+              ) 
+            }
           : c
       ),
     }));
